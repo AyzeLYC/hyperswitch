@@ -14,20 +14,16 @@ let dependancies = {};
 
 if (package_loader === false) {
 
-    let http = require("k6/http"),
-        { check } = require("k6");
+    let http = require("k6/http");
 
     dependancies["http"] = http;
-    dependancies["check"] = check;
     
 };
 if (package_loader === true) {
     
     import http from "k6/http";
-    import { check } from "k6";
 
     dependancies["http"] = http;
-    dependancies["check"] = check;
     
 };
 
