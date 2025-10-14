@@ -13,8 +13,7 @@ function parseRoute(url) {
         
     } else {
     
-      return { paymentId: "", merchantId: "", attemptId: "", connector: "",
-      };
+      return { paymentId: "", merchantId: "", attemptId: "", connector: "" };
         
     };
     
