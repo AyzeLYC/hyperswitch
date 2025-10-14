@@ -1,13 +1,59 @@
-import http from "k6/http";
-import { sleep, check } from "k6";
-import { Counter } from "k6/metrics";
-import { setup_merchant_apikey } from "./helper/setup.js";
-import { random_string } from "./helper/misc.js";
-import { readBaseline, storeResult } from "./helper/compare-result.js";
+let package_loader = false; /* false if NodeJS uses CommonJS, true if NodeJS uses ECMAScript */
 
-export const requests = new Counter("http_reqs");
+try {
 
-const baseline = readBaseline("payment-create-and-confirm");
+    require.main;
+    
+} catch(err) {
+
+    package_loader = true;
+    
+};
+
+let dependancies = {};
+
+if (package_loader === false) {
+
+    let http = require("k6/http"),
+        { sleep, check } = require("k6"),
+        { Counter } = require("k6/metrics"),
+        { setup_merchant_apikey } = require("./helper/setup.js"),
+        { reandom_string } = require("./helper/misc.js"),
+        { readBaseline, storeResult } = require("./helper/compare-result.js");
+
+    dependancies["http"] = http;
+    dependancies["sleep"] = sleep;
+    dependancies["check"] = check;
+    dependancies["Counter"] = Counter;
+    dependancies["setup_merchant_apikey"] = setup_merchant_apikey;
+    dependancies["random_string"] = random_string;
+    dependancies["readBaseline"] = readBaseline;
+    dependancies["storeResult"] = storeResult;
+    
+};
+if (package_loader === true) {
+    
+    import http from "k6/http";
+    import { sleep, check } from "k6";
+    import { Counter } from "k6/metrics";
+    import { setup_merchant_apikey } from "./helper/setup.js";
+    import { random_string } from "./helper/misc.js";
+    import { readBaseline, storeResult } from "./helper/compare-result.js";
+    
+    dependancies["http"] = http;
+    dependancies["sleep"] = sleep;
+    dependancies["check"] = check;
+    dependancies["Counter"] = Counter;
+    dependancies["setup_merchant_apikey"] = setup_merchant_apikey;
+    dependancies["random_string"] = random_string;
+    dependancies["readBaseline"] = readBaseline;
+    dependancies["storeResult"] = storeResult;
+
+};
+
+export const requests = new dependancies["Counter"]("http_reqs");
+
+const baseline = dependancies["readBaseline"]("payment-create-and-confirm");
 
 export const options = {
     stages: [
@@ -21,10 +67,13 @@ export const options = {
 };
 
 export function setup() {
-    return setup_merchant_apikey();
-}
+    
+    return dependancies["setup_merchant_apikey"]();
+    
+};
 
 export default function(data) {
+    
     const create_payment_payload = {
         "amount": 6540,
         "currency": "USD",
@@ -40,15 +89,18 @@ export default function(data) {
         "statement_descriptor_name": "Juspay",
         "statement_descriptor_suffix": "Router"
     };
-    let create_payment_res = http.post("http://router-server:8080/payments", JSON.stringify(create_payment_payload), {
+    
+    let create_payment_res = dependancies["http"].post("http://router-server:8080/payments", JSON.stringify(create_payment_payload), {
         "headers": {
             "Content-Type": "application/json",
             "api-key" : data.api_key
         },
     });
-    check(create_payment_res, {
+    
+    dependancies["check"](create_payment_res, {
         "create payment status 200": (r) => r.status === 200,
     });
+    
     const payment_id = create_payment_res.json().payment_id;
     const confirm_payment_payload = {
         "return_url": "http://example.com/payments",
@@ -65,17 +117,22 @@ export default function(data) {
             }
         }
     };
-    let confirm_payment_res = http.post(`http://router-server:8080/payments/${payment_id}/confirm`, JSON.stringify(confirm_payment_payload), {
+    
+    let confirm_payment_res = dependancies["http"].post(`http://router-server:8080/payments/${payment_id}/confirm`, JSON.stringify(confirm_payment_payload), {
         "headers": {
             "Content-Type": "application/json",
             "api-key" : data.api_key
         },
     });
-    check(confirm_payment_res, {
+    
+    dependancies["check"](confirm_payment_res, {
         "confirm payment status 200": (r) => r.status === 200,
     });
+    
 };
 
 export function handleSummary(data) {
-    return storeResult("payment-create-and-confirm", baseline, data)
-}
+    
+    return storeResult("payment-create-and-confirm", baseline, data);
+    
+};
