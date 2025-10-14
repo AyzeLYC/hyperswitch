@@ -1,7 +1,38 @@
-import http from "k6/http";
-import { check } from "k6";
+let package_loader = false; /* false if NodeJS uses CommonJS, true if NodeJS uses ECMAScript */
+
+try {
+
+    require.main; /* NodeJS will automatically return an error if the require function isn't accessible, which is the case when NodeJS is running ECMAScript */
+    
+} catch(err) {
+
+    package_loader = true;
+    
+};
+
+let dependancies = {};
+
+if (package_loader === false) {
+
+    let http = require("k6/http"),
+        { check } = require("k6");
+
+    dependancies["http"] = http;
+    dependancies["check"] = check;
+    
+};
+if (package_loader === true) {
+    
+    import http from "k6/http";
+    import { check } from "k6";
+
+    dependancies["http"] = http;
+    dependancies["check"] = check;
+    
+};
 
 export function setup_merchant_apikey() {
+    
     let params = {
         "headers": {
             "Content-Type": "application/json",
@@ -46,7 +77,7 @@ export function setup_merchant_apikey() {
             "unit":"245"
         }
     }
-    let ma_res = http.post("http://router-server:8080/accounts", JSON.stringify(merchant_account_payload), params);
+    let ma_res = dependancies["http"].post("http://router-server:8080/accounts", JSON.stringify(merchant_account_payload), params);
 
     let json = ma_res.json();
     let merchant_id = json.merchant_id;
@@ -94,8 +125,8 @@ export function setup_merchant_apikey() {
             "city":"NY",
             "unit":"245"
         }
-    }
-    let ca_res = http.post(`http://router-server:8080/account/${merchant_id}/connectors`, JSON.stringify(connector_account_payload), params);
+    };
+    let ca_res = dependanciees["http"].post(`http://router-server:8080/account/${merchant_id}/connectors`, JSON.stringify(connector_account_payload), params);
 
     let update_merchant_account_payload = {
         "merchant_id":merchant_id,
@@ -133,8 +164,10 @@ export function setup_merchant_apikey() {
             "city":"NY",
             "unit":"245"
         }
-    }
-    let uma_res = http.post(`http://router-server:8080/accounts/${merchant_id}`, JSON.stringify(update_merchant_account_payload), params);
-
-    return { "api_key": api_key }
-}
+    };
+    
+    let uma_res = dependancies["http"].post(`http://router-server:8080/accounts/${merchant_id}`, JSON.stringify(update_merchant_account_payload), params);
+    
+    return { "api_key": api_key };
+    
+};
