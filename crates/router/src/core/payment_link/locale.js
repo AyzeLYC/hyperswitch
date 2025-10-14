@@ -653,7 +653,7 @@ function getLanguage(localeStr) {
 function getTranslations(localeStr) {
  
   var fallback_locale = 'en',
-       language = getLanguage(localeStr);
+      language = getLanguage(localeStr);
  
   return locales[language] || locales[fallback_locale];
  
