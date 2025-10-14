@@ -1,10 +1,10 @@
 // @ts-check
 
-var widgets = null;
-var paymentMethodCollect = null;
+var widgets = null,
+    paymentMethodCollect = null,
 // @ts-ignore
-var publishableKey = window.__PM_COLLECT_DETAILS.publishable_key;
-var hyper = null;
+    publishableKey = window.__PM_COLLECT_DETAILS.publishable_key,
+    hyper = null;
 
 /**
  * Trigger - init
@@ -12,15 +12,19 @@ var hyper = null;
  *  - Instantiate SDK
  */
 function boot() {
+  
   // @ts-ignore
   var paymentMethodCollectDetails = window.__PM_COLLECT_DETAILS;
 
   // Initialize SDK
   // @ts-ignore
   if (window.Hyper) {
+    
     initializeCollectSDK();
-  }
-}
+    
+  };
+  
+};
 boot();
 
 /**
@@ -31,13 +35,13 @@ boot();
  *  - Mount it in DOM
  **/
 function initializeCollectSDK() {
+  
   // @ts-ignore
-  var paymentMethodCollectDetails = window.__PM_COLLECT_DETAILS;
-  var clientSecret = paymentMethodCollectDetails.client_secret;
-  var appearance = {
+  var paymentMethodCollectDetails = window.__PM_COLLECT_DETAILS,
+      clientSecret = paymentMethodCollectDetails.client_secret,
+      appearance = {
     variables: {
-      colorPrimary:
-        paymentMethodCollectDetails?.theme?.primary_color || "rgb(0, 109, 249)",
+      colorPrimary: paymentMethodCollectDetails?.theme?.primary_color || "rgb(0, 109, 249)",
       fontFamily: "Work Sans, sans-serif",
       fontSizeBase: "16px",
       colorText: "rgb(51, 65, 85)",
@@ -46,13 +50,11 @@ function initializeCollectSDK() {
       colorTextPlaceholder: "#33415550",
       borderColor: "#33415550",
       colorBackground: "rgb(255, 255, 255)",
-    },
+    }
   };
   // Instantiate
   // @ts-ignore
-  hyper = window.Hyper(publishableKey, {
-    isPreloadEnabled: false,
-  });
+  hyper = window.Hyper(publishableKey, {isPreloadEnabled: false});
   widgets = hyper.widgets({
     appearance: appearance,
     clientSecret: clientSecret,
@@ -69,13 +71,13 @@ function initializeCollectSDK() {
     returnUrl: paymentMethodCollectDetails.return_url,
     flow: "PayoutMethodCollect",
   };
-  paymentMethodCollect = widgets.create(
-    "paymentMethodCollect",
-    paymentMethodCollectOptions
-  );
+  paymentMethodCollect = widgets.create( "paymentMethodCollect", paymentMethodCollectOptions );
 
   // Mount
   if (paymentMethodCollect !== null) {
+    
     paymentMethodCollect.mount("#payment-method-collect");
-  }
-}
+    
+  };
+  
+};
