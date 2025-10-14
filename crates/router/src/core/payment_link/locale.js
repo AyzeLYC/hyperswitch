@@ -1,4 +1,4 @@
-/*    
+/**
 The languages supported by locale.js are: 
  1) English (en)
  2) Hebrew (he)
@@ -18,7 +18,7 @@ The languages supported by locale.js are:
  16) Russian (ru)
  17) Chinese (zh)
  19) Traditional Chinese (zh-hant)
-*/
+**/
 const locales = {
     en: {
       expiresOn: "Link expires on: ",
@@ -613,29 +613,48 @@ const locales = {
       notAllowed: "您無權查看此內容。",
       errorCode: "錯誤代碼",
       errorMessage: "錯誤訊息"
-    },
-  };
+    }
+};
 
 function getLanguage(localeStr) {
-  var fallback_locale = 'en';
-  var primaryLocale = (localeStr.toLowerCase() || fallback_locale).split(',')[0].trim();
+ 
+  var fallback_locale = 'en',
+      primaryLocale = (localeStr.toLowerCase() || fallback_locale).split(',')[0].trim();
   
   // Split into language and country parts
-  var parts = primaryLocale.split('-');
-  var language = parts[0];
-  var country = parts.length > 1 ? parts[1] : null;
+  var parts = primaryLocale.split('-'),
+      language = parts[0],
+      country = parts.length > 1 ? parts[1] : null;
 
   var key = language + '-' + country;
+ 
   switch (key) {
-    case 'en-gb': return 'en-gb';
-    case 'fr-be': return 'fr-be';
-    case 'zh-hant': return 'zh-hant';
-    default: return language;
-  }
-}
+    
+    case 'en-gb':
+    
+        return 'en-gb';
+    
+    case 'fr-be':
+    
+        return 'fr-be';
+    
+    case 'zh-hant':
+    
+        return 'zh-hant';
+    
+    default:
+    
+        return language;
+    
+  };
+ 
+};
 
 function getTranslations(localeStr) {
-  var fallback_locale = 'en';
-  var language = getLanguage(localeStr);
+ 
+  var fallback_locale = 'en',
+       language = getLanguage(localeStr);
+ 
   return locales[language] || locales[fallback_locale];
-}
+ 
+};
