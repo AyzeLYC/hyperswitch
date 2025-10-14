@@ -1,13 +1,59 @@
-import http from "k6/http";
-import { sleep, check } from "k6";
-import { Counter } from "k6/metrics";
-import { setup_merchant_apikey } from "./helper/setup.js";
-import { random_string } from "./helper/misc.js";
-import { readBaseline, storeResult } from "./helper/compare-result.js";
+let package_loader = false; /* true if NodeJS uses CommonJS, false if NodeJS uses ECMAScript */
 
-export const requests = new Counter("http_reqs");
+try {
 
-const baseline = readBaseline("payment-confirm");
+    require.main;
+    
+} catch(err) {
+
+    package_loader = true;
+    
+};
+
+let dependancies = {};
+
+if (package_loader === false) {
+
+    let http = require("k6/http"),
+        { sleep, check } = require("k6"),
+        { Counter } = require("k6/metrics"),
+        { setup_merchant_apikey } = require("./helper/setup.js"),
+        { random_string } = require("./helper/misc.js"),
+        { readBaseline, storeResult } = require("./helper/compare-result.js");
+
+    dependancies["http"] = sleep;
+    dependancies["sleep"] = sleep;
+    dependancies["check"] = check;
+    dependancies["Counter"] = Counter;
+    dependancies["setup_merchant_apikey"] = setup_merchant_apikey;
+    dependancies["random_string"] = random_string;
+    dependancies["readBaseline"] = readBaseline;
+    dependancies["storeResult"] = storeResult;
+    
+};
+if (package_loader === true) {
+
+    import http from "k6/http";
+    import { sleep, check } from "k6";
+    import { Counter } from "k6/metrics";
+    import { setup_merchant_apikey } from "./helper/setup.js";
+    import { random_string } from "./helper/misc.js";
+    import { readBaseline, storeResult } from "./helper/compare-result.js";
+    
+    dependancies["http"] = sleep;
+    dependancies["sleep"] = sleep;
+    dependancies["check"] = check;
+    dependancies["Counter"] = Counter;
+    dependancies["setup_merchant_apikey"] = setup_merchant_apikey;
+    dependancies["random_string"] = random_string;
+    dependancies["readBaseline"] = readBaseline;
+    dependancies["storeResult"] = storeResult;
+
+};
+
+export const requests = new dependancies["Counter"]("http_reqs");
+
+const baseline = dependancies["readBaseline"]("payment-confirm");
 
 export const options = {
     stages: [
@@ -21,8 +67,10 @@ export const options = {
 };
 
 export function setup() {
-    return setup_merchant_apikey();
-}
+    
+    return dependancies["setup_merchant_apikey"]();
+    
+};
 
 export default function (data) {
     let payload = {
@@ -32,7 +80,7 @@ export default function (data) {
         "capture_method": "automatic",
         "capture_on": "2022-09-10T10:11:12Z",
         "amount_to_capture": 6540,
-        "customer_id": random_string(),
+        "customer_id": dependancies["random_string"](),
         "email": "guest@example.com",
         "name": "John Doe",
         "phone": "999999999",
@@ -59,17 +107,19 @@ export default function (data) {
             "login_date": "2019-09-10T10:11:12Z"
         }
     };
-    let res = http.post("http://router-server:8080/payments", JSON.stringify(payload), {
+    let res = dependancies["http"].post("http://router-server:8080/payments", JSON.stringify(payload), {
         "headers": {
             "Content-Type": "application/json",
             "api-key" : data.api_key
         },
     });
-    check(res, {
+    dependancies["check"](res, {
         "confirm payment status 200": (r) => r.status === 200,
     });
 }
 
 export function handleSummary(data) {
-    return storeResult("payment-confirm", baseline, data)
-}
+    
+    return dependancies["storeResult"]("payment-confirm", baseline, data);
+    
+};
