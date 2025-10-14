@@ -237,11 +237,7 @@ function getLuminance(c) {
 };
 function invertToBW(color, bw, asArr) {
   
-  var DEFAULT_BW = {
-    black: "#090302",
-    white: "#FFFFFC",
-    threshold: Math.sqrt(1.05 * 0.05) - 0.05,
-  },
+  var DEFAULT_BW = {black: "#090302", white: "#FFFFFC", threshold: Math.sqrt(1.05 * 0.05) - 0.05},
       options = bw === true ? DEFAULT_BW : Object.assign({}, DEFAULT_BW, bw);
   
   return getLuminance(color) > options.threshold ? asArr ? hexToRgbArray(options.black) : options.black : asArr ? hexToRgbArray(options.white) : options.white;
@@ -278,15 +274,11 @@ function invert(color, bw) {
 {{ payment_details_js_script }};
 
 /* @ts-ignore */
-window.state = {
-  prevHeight: window.innerHeight,
-  prevWidth: window.innerWidth,
-  isMobileView: window.innerWidth <= 1199,
-  currentScreen: "payment_link",
-};
+window.state = {prevHeight: window.innerHeight, prevWidth: window.innerWidth, isMobileView: window.innerWidth <= 1199, currentScreen: "payment_link"};
 
 var widgets = null,
     unifiedCheckout = null;
+
 /* @ts-ignore */
 var encodedPaymentDetails = window.__PAYMENT_DETAILS,
     paymentDetails = decodeUri(encodedPaymentDetails),
@@ -342,6 +334,7 @@ function boot() {
   if (paymentDetails.display_sdk_only) {
     
     hide(".checkout-page");
+   
     var sdkDisplayWidth = document.querySelector('.hyper-checkout-sdk');
     sdkDisplayWidth.style.width = '100vw';
     
@@ -380,6 +373,7 @@ function boot() {
     link.rel = "icon";
     link.href = paymentDetails.merchant_logo;
     link.type = "image/x-icon";
+   
     document.head.appendChild(link);
     
   };
@@ -622,6 +616,7 @@ function initializeEventListeners(paymentDetails) {
     paymentForm.addEventListener("submit", function (event) {
       
       event.preventDefault();
+     
       handleSubmit(event, paymentDetails);
       
     });
@@ -751,13 +746,7 @@ function handleSubmit(e, paymentDetails) {
     
   };
 
-  hyper.confirmPayment({
-      widgets: widgets,
-      confirmParams: {
-        /* Make sure to change this to your payment completion page */
-        return_url: paymentDetails.return_url,
-      }
-    }).then(function (result) {
+  hyper.confirmPayment({ widgets: widgets, confirmParams: { /* Make sure to change this to your payment completion page */return_url: paymentDetails.return_url } }).then(function (result) {
     
       var error = result.error;
     
@@ -890,12 +879,7 @@ function formatDate(date) {
 
   /* @ts-ignore */
   var locale = navigator.language || navigator.userLanguage,
-      timezoneShorthand = date.toLocaleDateString(locale, {
-        
-      day: "2-digit",
-      timeZoneName: "long"
-        
-    }).substring(4).split(" ").reduce(function (tz, c) {
+      timezoneShorthand = date.toLocaleDateString(locale, { day: "2-digit", timeZoneName: "long" }).substring(4).split(" ").reduce(function (tz, c) {
         
       return tz + c.charAt(0).toUpperCase();
         
@@ -1005,8 +989,7 @@ function appendMerchantDetails(paymentDetails, merchantDynamicDetails) {
     
     let merchantDetailsObject = paymentDetails.transaction_details;
     
-    // sort the merchant details based on the position
-    // if position is null, then it will be shown at the end
+    /* sort the merchant details based on the position, if position is null then it will be shown at the end */
     merchantDetailsObject.sort((a, b) => {
       
       if (a.ui_configuration === null || a.ui_configuration.position === null) {
@@ -1027,6 +1010,7 @@ function appendMerchantDetails(paymentDetails, merchantDynamicDetails) {
       } else {
         
         return 0;
+       
       };
       
     });
@@ -1042,7 +1026,7 @@ function appendMerchantDetails(paymentDetails, merchantDynamicDetails) {
       /* render a horizontal line above dynamic merchant details */
       var horizontalLineContainer = document.getElementById("hyper-checkout-payment-horizontal-line-container"),
           horizontalLine = document.createElement("hr");
-      horizontalLine.className = "hyper-checkout-payment-horizontal-line";
+          horizontalLine.className = "hyper-checkout-payment-horizontal-line";
 
       if (horizontalLineContainer instanceof HTMLDivElement) {
         
@@ -1079,7 +1063,8 @@ function appendMerchantDetails(paymentDetails, merchantDynamicDetails) {
           
         };
         var separatorNode = document.createElement("span");
-        separatorNode.textContent = " : ";
+            separatorNode.textContent = " : ";
+       
         merchantData.appendChild(keyNode);
         merchantData.appendChild(separatorNode);
         merchantData.appendChild(valueNode);
@@ -1146,18 +1131,21 @@ function renderDescription(paymentDetails) {
         break;
         
       case "layout2":
+      
         var paymentContextNode = document.getElementById("hyper-checkout-payment-context");
+      
         if (paymentContextNode instanceof HTMLDivElement) {
           
           var merchantDescriptionNode = document.createElement("div");
-          merchantDescriptionNode.id = "hyper-checkout-merchant-description";
-          merchantDescriptionNode.innerText = paymentDetails.merchant_description;
+              merchantDescriptionNode.id = "hyper-checkout-merchant-description";
+              merchantDescriptionNode.innerText = paymentDetails.merchant_description;
           
           var merchantDetailsNode = document.getElementById("hyper-checkout-payment-merchant-details");
           
           if (merchantDetailsNode instanceof HTMLDivElement) {
             
             paymentContextNode.insertBefore(merchantDescriptionNode, merchantDetailsNode);
+           
             show("#hyper-checkout-merchant-description");
             
           };
@@ -1168,6 +1156,7 @@ function renderDescription(paymentDetails) {
       default:
         
         renderDefaultLayout(paymentDetails.merchant_description);
+      
     };
     
   };
@@ -1302,8 +1291,8 @@ function renderCart(paymentDetails) {
     if (totalItems > MAX_ITEMS_VISIBLE_AFTER_COLLAPSE) {
       
       var expandButtonNode = document.createElement("div");
-      expandButtonNode.className = "hyper-checkout-cart-button";
-      expandButtonNode.onclick = () => {
+          expandButtonNode.className = "hyper-checkout-cart-button";
+          expandButtonNode.onclick = () => {
         
         handleCartView(paymentDetails);
         
@@ -1369,6 +1358,7 @@ function renderCartItem(item, paymentDetails, shouldAddDividerNode, cartItemsNod
       productNameNode = document.createElement("div");
   
   itemWrapperNode.className = "hyper-checkout-cart-item";
+ 
   nameAndQuantityWrapperNode.className = "hyper-checkout-cart-product-details";
   
   /* Image */
@@ -1385,15 +1375,15 @@ function renderCartItem(item, paymentDetails, shouldAddDividerNode, cartItemsNod
   if (item.quantity !== null) {
     
     var quantityNode = document.createElement("div");
-    quantityNode.className = "hyper-checkout-card-item-quantity";
-    quantityNode.innerText = `${translations.quantity}: ${item.quantity}`;
+        quantityNode.className = "hyper-checkout-card-item-quantity";
+        quantityNode.innerText = `${translations.quantity}: ${item.quantity}`;
     
   };
   
   /* Product price */
   var priceNode = document.createElement("div");
-  priceNode.className = "hyper-checkout-card-item-price";
-  priceNode.innerText = `${paymentDetails.currency} ${item.amount}`;
+      priceNode.className = "hyper-checkout-card-item-price";
+      priceNode.innerText = `${paymentDetails.currency} ${item.amount}`;
   
   /* Append items */
   nameAndQuantityWrapperNode.append(productNameNode);
@@ -1410,7 +1400,7 @@ function renderCartItem(item, paymentDetails, shouldAddDividerNode, cartItemsNod
   if (shouldAddDividerNode) {
     
     var dividerNode = document.createElement("div");
-    dividerNode.className = "hyper-checkout-cart-item-divider";
+        dividerNode.className = "hyper-checkout-cart-item-divider";
     
     cartItemsNode.append(dividerNode);
     
@@ -1597,6 +1587,7 @@ function viewCartInMobileView() {
   * @param {PaymentDetails} paymentDetails
 **/
 function renderSDKHeader(paymentDetails) {
+ 
   /* SDK headers' items */
   var sdkHeaderItemNode = document.createElement("div"),
       sdkHeaderMerchantNameNode = document.createElement("div"),
