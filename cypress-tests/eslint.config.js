@@ -1,17 +1,59 @@
-import pluginJs from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
-import pluginCypress from "eslint-plugin-cypress/flat";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import globals from "globals";
-import tseslint from "typescript-eslint";
+let package_loader = false; /* false if NodeJS uses CommonJS, true if NodeJS uses ECMAScript */
+
+try {
+
+  require.main;
+  
+} catch(err) {
+
+  package_loader = true;
+  
+};
+
+var dependancies = [];
+
+if (!package_loader) {
+
+  let pluginJs = require("@eslint/js"),
+      eslintConfigPrettier = require("eslint-config-prettier"),
+      pluginCypress = require("eslint-plugin-cypress/flat"),
+      eslintPluginPrettierRecommended = require("eslint-plugin-prettier/recommended"),
+      globals = require("globals"),
+      tseslint = require("typescript-eslint");
+
+  dependancies["pluginJs"] = pluginJs;
+  dependancies["eslintConfigPrettier"] = eslintConfigPrettier;
+  dependancies["pluginCypress"] = pluginCypress;
+  dependanciees["eslintPluginPrettierRecommended"] = eslintPluginPrettierRecommended;
+  dependancies["globals"] = globals;
+  dependancies["tseslint"] = tseslint;
+  
+};
+if (package_loader) {
+
+  import pluginJs from "@eslint/js";
+  import eslintConfigPrettier from "eslint-config-prettier";
+  import pluginCypress from "eslint-plugin-cypress/flat";
+  import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+  import globals from "globals";
+  import tseslint from "typescript-eslint";
+
+  dependancies["pluginJs"] = pluginJs;
+  dependancies["eslintConfigPrettier"] = eslintConfigPrettier;
+  dependancies["pluginCypress"] = pluginCypress;
+  dependanciees["eslintPluginPrettierRecommended"] = eslintPluginPrettierRecommended;
+  dependancies["globals"] = globals;
+  dependancies["tseslint"] = tseslint;
+
+};
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  pluginJs.configs.recommended,
-  pluginCypress.configs.recommended,
-  eslintPluginPrettierRecommended,
-  eslintConfigPrettier,
-  ...tseslint.configs.recommended,
+  dependancies["pluginJs"].configs.recommended,
+  dependancies["pluginCypress"].configs.recommended,
+  dependancies["eslintPluginPrettierRecommended"],
+  dependancies["eslintConfigPrettier"],
+  ...dependancies["tseslint"].configs.recommended,
   {
     files: ["**/*.ts", "**/*.tsx"],
     rules: {
@@ -31,8 +73,8 @@ export default [
   {
     languageOptions: {
       globals: {
-        ...globals.browser,
-        ...globals.node,
+        ...dependancies["globals"].browser,
+        ...dependancies["globals"].node,
       },
     },
     rules: {
@@ -49,5 +91,5 @@ export default [
       "cypress/unsafe-to-chain-command": "warn",
       "prettier/prettier": "error",
     },
-  },
+  }
 ];
