@@ -49,7 +49,7 @@ const reportName = process.env.REPORT_NAME || `${connectorId}_report`;
 /* Get timeout multiplier from shared utility */
 const timeoutMultiplier = dependancies["getTimeoutMultiplier"]();
 
-export default defineConfig({
+export default dependancies["defineConfig"]({
   
   e2e: {
     
